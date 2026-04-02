@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+<!--
+  diff_rover.urdf  —  Differential Drive 2-wheel rover + front caster ball
+  ROS2 Humble + Ignition Gazebo (Fortress)
+
+  WSL2 FIX SUMMARY:
+    1. render_engine changed ogre2 → ogre   (WSL2 has no ogre2 GPU support)
+    2. sensor type   changed lidar → gpu_lidar  (Fortress only supports gpu_lidar)
+    CPU 'lidar' type is not implemented in Fortress at all — gpu_lidar + ogre
+    is the only combination that works on WSL2.
+-->
+
+<robot name="diff_rover">
+
+  <!-- ═══════════════════════════════════════════════
+       BASE LINKS
+  ═══════════════════════════════════════════════ -->
+
+  <link name="base_footprint"/>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <!-- z=0.1 → wheel bottoms (radius=0.1) and caster bottom sit on z=0 -->
+    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+  </joint>
+
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.5 0.3 0.1"/></geometry>
+      <material name="Silver"><color rgba="0.75 0.75 0.75 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.5 0.3 0.1"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="10.0"/>
+      <inertia ixx="0.0833" ixy="0" ixz="0"
+               iyy="0.2167" iyz="0"
+               izz="0.2833"/>
+    </inertial>
+  </link>
+
+  <!-- ═══════════════════════════════════════════════
+       LEFT WHEEL  (driven)
+  ═══════════════════════════════════════════════ -->
+
+  <link name="left_wheel">
+    <visual>
+      <geometry><cylinder length="0.05" radius="0.1"/></geometry>
+      <material name="Black"><color rgba="0 0 0 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder length="0.05" radius="0.1"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.003542" ixy="0" ixz="0"
+               iyy="0.003542" iyz="0"
+               izz="0.005"/>
+    </inertial>
+  </link>
+
+  <!--
+    Wheels centered at x=0 (correct CoR for pure diff-drive).
+    y = ±0.175  →  wheel outer face clears the base edge.
+    z = 0 in base_link frame → world z=0.1 → wheel bottom at z=0.0  ✓
+    rpy rotates the cylinder spin axis from Z → Y (rolls forward).
+  -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="-0.125 0.175 0" rpy="-1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════════════
+       RIGHT WHEEL  (driven)
+  ═══════════════════════════════════════════════ -->
+
+  <link name="right_wheel">
+    <visual>
+      <geometry><cylinder length="0.05" radius="0.1"/></geometry>
+      <material name="Black"><color rgba="0 0 0 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder length="0.05" radius="0.1"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.003542" ixy="0" ixz="0"
+               iyy="0.003542" iyz="0"
+               izz="0.005"/>
+    </inertial>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="-0.125 -0.175 0" rpy="-1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════════════
+       FRONT CASTER BALL  (passive support)
+
+       Geometry:
+         base_link is at world z=0.1 (from base_joint).
+         Joint origin z=-0.1 → caster centre at world z=0.0.
+         Sphere radius=0.05 → centre must be at z=0.05 for ground contact.
+         So joint origin z = -0.1 + 0.05 = -0.05 from base_link bottom face.
+
+         base_link bottom face in its own frame = z = -0.05
+         caster centre offset from base_link origin = -0.05 - 0.05 = -0.10... 
+
+         Simpler: base_link origin is at its geometric centre.
+         Bottom face of base = z = -0.05 in base_link frame.
+         We want sphere centre at z = -0.05 - 0.05 = -0.10 in base_link frame
+         → world z = 0.1 + (-0.10) = 0.0... sphere centre at world z=0.0?
+         
+         Correction: sphere radius=0.05, so centre must be at world z=0.05
+         for bottom to touch z=0.
+         world z of centre = 0.1 (base_joint) + joint_z_offset
+         0.05 = 0.1 + joint_z_offset  →  joint_z_offset = -0.05
+
+         So: origin xyz="0.2 0 -0.05"  — sits just below the base bottom face.
+
+       Type = fixed: ODE contact + friction handles passive rolling.
+       No actuated DOF needed for a ball caster.
+  ═══════════════════════════════════════════════ -->
+
+  <link name="caster_link">
+    <visual>
+      <geometry><sphere radius="0.05"/></geometry>
+      <material name="DarkGrey"><color rgba="0.3 0.3 0.3 1"/></material>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.05"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.3"/>
+      <!-- Solid sphere: I = 2/5 * m * r^2 = 2/5 * 0.3 * 0.0025 -->
+      <inertia ixx="0.0003" ixy="0" ixz="0"
+               iyy="0.0003" iyz="0"
+               izz="0.0003"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_link"/>
+    <!--
+      x=+0.2  : front of the 0.5m base
+      y=0     : centred laterally
+      z=-0.05 : sphere centre at world z=0.05 → bottom touches z=0  ✓
+    -->
+    <origin xyz="0.2 0 -0.05" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════════════
+       SENSORS
+  ═══════════════════════════════════════════════ -->
+
+  <link name="lidar_link">
+    <visual>
+      <geometry><cylinder length="0.04" radius="0.05"/></geometry>
+      <material name="Blue"><color rgba="0 0 1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder length="0.04" radius="0.05"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0" ixz="0"
+               iyy="0.001" iyz="0"
+               izz="0.001"/>
+    </inertial>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0 0 0.07" rpy="0 0 0"/>
+  
+  </joint>
+
+  <link name="camera_link">
+    <visual>
+      <geometry><box size="0.02 0.05 0.02"/></geometry>
+      <material name="Red"><color rgba="1 0 0 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.02 0.05 0.02"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0"
+               iyy="0.0001" iyz="0"
+               izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.25 0 0.05" rpy="0 0 0"/>
+  </joint>
+
+  <link name="camera_link_optical"/>
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_link_optical"/>
+    <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════════════
+       IGNITION GAZEBO PLUGINS
+  ═══════════════════════════════════════════════ -->
+
+  <gazebo>
+
+    <plugin filename="libignition-gazebo-joint-state-publisher-system.so"
+            name="ignition::gazebo::systems::JointStatePublisher"/>
+
+    <plugin filename="libignition-gazebo-sensors-system.so"
+            name="ignition::gazebo::systems::Sensors">
+      <render_engine>ogre</render_engine>
+    </plugin>
+
+    <plugin filename="libignition-gazebo-diff-drive-system.so"
+            name="ignition::gazebo::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.35</wheel_separation>
+      <wheel_radius>0.1</wheel_radius>
+      <topic>cmd_vel</topic>
+      <odom_topic>odom</odom_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+      <tf_topic>/tf</tf_topic>
+      <odom_publish_frequency>50</odom_publish_frequency>
+    </plugin>
+
+    <!-- JointPositionController removed — no steering joint exists -->
+
+  </gazebo>
+
+  <!-- ═══════════════════════════════════════════════
+       LIDAR SENSOR  — UNCHANGED from original
+  ═══════════════════════════════════════════════ -->
+
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <pose relative_to="lidar_link">0 0 0 0 0 0</pose>
+      <topic>scan</topic>
+      <update_rate>10</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.15</min>
+          <max>10.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- ═══════════════════════════════════════════════
+       CAMERA SENSOR
+  ═══════════════════════════════════════════════ -->
+
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="camera">
+      <pose relative_to="camera_link">0 0 0 0 0 0</pose>
+      <topic>camera/image_raw</topic>
+      <camera_info_topic>camera/camera_info</camera_info_topic>
+      <update_rate>30</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>100</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+    </sensor>
+  </gazebo>
+
+</robot>
