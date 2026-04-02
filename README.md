@@ -13,7 +13,7 @@ A ROS2 Humble differential drive rover with Gazebo Ignition Fortress simulation,
 
 ## 🎥 Videos
 
-<!-- Add demo video links or embeds here -->
+<!-- Add demo video links here -->
 
 | Teleop Demo | YOLO Detection | Lidar Visualization |
 |:-----------:|:--------------:|:-------------------:|
@@ -26,16 +26,19 @@ A ROS2 Humble differential drive rover with Gazebo Ignition Fortress simulation,
 ```
 my_robot_description/
 ├── launch/
-│   └── launch_sim.launch.py     # Main simulation launch file
+│   └── simulation.launch.py     # Main simulation launch file
 ├── my_robot_description/
+│   ├── __init__.py
 │   ├── teleop_node.py           # WASD keyboard teleoperation
 │   ├── cam.py                   # Camera recorder (video + snapshots + rosbag)
 │   └── yolo.py                  # YOLOv8 object detection node
 ├── urdf/
-│   └── diff_rover.urdf          # Robot model (base, wheels, caster, lidar, camera)
-├── config/                      # RViz and bridge configs
+│   └── robot.urdf               # Robot model (base, wheels, caster, lidar, camera)
 ├── resource/
+│   └── my_robot_description
+├── test/
 ├── package.xml
+├── setup.cfg
 └── setup.py
 ```
 
@@ -106,7 +109,7 @@ source install/setup.bash
 ### 2. Launch Simulation
 
 ```bash
-ros2 launch my_robot_description launch_sim.launch.py
+ros2 launch my_robot_description simulation.launch.py
 ```
 
 ### 3. Teleop (keyboard control)
