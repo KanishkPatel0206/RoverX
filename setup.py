@@ -22,6 +22,8 @@ setup(
         (os.path.join('share', package_name, 'urdf'), glob('urdf/*.urdf')),
         # 3. Config Files (RViz, Bridge)
         (os.path.join('share', package_name, 'config'), glob('config/*')),
+        # 4. Gazebo World Files
+        (os.path.join('share', package_name, 'worlds'), glob('worlds/*.sdf')),
         # --------------------------
     ],
     install_requires=['setuptools'],
@@ -37,9 +39,10 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'teleop_wasd = my_robot_description.teleop_node:main',
-            'yolo        = my_robot_description.yolo:main',      # ← added
-            'cam         = my_robot_description.cam:main',       # ← added
+            'teleop_wasd          = my_robot_description.teleop_node:main',
+            'yolo                 = my_robot_description.yolo:main',
+            'cam                  = my_robot_description.cam:main',
+            'obstacle_avoidance   = my_robot_description.obstacle_avoidance:main',  # ← added
         ],
     },
 )
