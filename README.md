@@ -1,88 +1,123 @@
-# 🤖 RoverX
+<div align="center">
 
-A ROS2 Humble differential drive rover with Gazebo Ignition Fortress simulation, lidar, YOLOv8 object detection, and onboard camera recording.
+<!-- Animated title using SVG -->
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=36&duration=3000&pause=1000&color=00D4FF&center=true&vCenter=true&width=600&lines=🤖+RoverX;ROS+2+Differential+Drive+Rover;Gazebo+%7C+YOLOv8+%7C+LiDAR" alt="Typing SVG" />
 
----
+<br/>
 
-## 📸 Demo
+![ROS2](https://img.shields.io/badge/ROS2-Humble-blue?style=for-the-badge&logo=ros&logoColor=white)
+![Gazebo](https://img.shields.io/badge/Gazebo-Ignition_Fortress-orange?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.10-yellow?style=for-the-badge&logo=python&logoColor=white)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-purple?style=for-the-badge)
+![WSL2](https://img.shields.io/badge/WSL2-Compatible-green?style=for-the-badge&logo=linux&logoColor=white)
 
-<!-- Add a screenshot or GIF of the rover in Gazebo here -->
-![RoverX in Gazebo]()
+<br/>
 
----
+*A fully simulated differential drive rover with 360° LiDAR, real-time YOLOv8 object detection, and onboard camera recording — running on ROS 2 Humble + Ignition Gazebo Fortress.*
 
-## 🎥 Videos
-
-<!-- Add demo video links here -->
-
-| Teleop Demo | YOLO Detection | Lidar Visualization |
-|:-----------:|:--------------:|:-------------------:|
-| [▶ Watch]() | [▶ Watch]() | [▶ Watch]() |
+</div>
 
 ---
 
-## 📦 Package Structure
+## 📸 Preview
+
+<div align="center">
+
+<!-- Replace the src below with a real screenshot or GIF once available -->
+<img src="assets/roverx_preview.gif" alt="RoverX in Gazebo Fortress" width="80%" />
+
+> *Rover navigating in Gazebo Fortress with LiDAR scan and YOLOv8 overlay*
+
+</div>
+
+---
+
+## 🎬 Demo Videos
+
+<div align="center">
+
+> 🎥 Drop `.mp4` files in the `assets/` folder and link them below, or embed YouTube thumbnails using the template in the comment.
+
+| Teleop Demo | YOLO Detection | LiDAR Visualization |
+|:-----------:|:--------------:|:--------------------:|
+| [![Teleop](https://img.shields.io/badge/▶_Watch-Teleop_Demo-blue?style=for-the-badge)]() | [![YOLO](https://img.shields.io/badge/▶_Watch-YOLO_Demo-purple?style=for-the-badge)]() | [![LiDAR](https://img.shields.io/badge/▶_Watch-LiDAR_Demo-orange?style=for-the-badge)]() |
+| WASD keyboard control | Real-time bounding boxes | RViz 360° scan |
+
+<!-- 
+  ── YouTube embed template ──────────────────────────────────────────
+  Replace YOUR_VIDEO_ID with the actual YouTube video ID.
+
+  [![Watch on YouTube](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+
+  ── Local video / GitHub release ────────────────────────────────────
+  Upload the .mp4 to a GitHub Release, then link the download URL:
+
+  [![Teleop Demo](assets/teleop_thumbnail.png)](https://github.com/KanishkPatel0206/RoverX/releases/download/v1.0/teleop_demo.mp4)
+  ─────────────────────────────────────────────────────────────────── 
+-->
+
+</div>
+
+---
+
+## ✨ Features
+
+<div align="center">
+
+| Module | Description |
+|--------|-------------|
+| 🚗 **Differential Drive** | Two driven wheels + front caster ball, controlled via `/cmd_vel` |
+| 🌐 **Gazebo Ignition Fortress** | Full physics simulation with `libignition-gazebo-diff-drive-system` |
+| 📡 **360° LiDAR** | GPU LiDAR (`gpu_lidar`) → `/scan` topic, visualized in RViz |
+| 📷 **Onboard Camera** | 640×480 @ 30fps, bridged via `ros_gz_image` |
+| ⌨️ **WASD Teleop** | Terminal keyboard control — hold to move, release to stop |
+| 🎥 **Camera Recorder** | Saves MP4 video, JPEG snapshots every 10s, and a full ROS 2 bag |
+| 🧠 **YOLOv8 Detection** | Real-time object detection on `/camera/image_raw` with annotated output |
+
+</div>
+
+---
+
+## 🗂️ Package Structure
 
 ```
-my_robot_description/
+RoverX/
 ├── launch/
-│   └── simulation.launch.py     # Main simulation launch file
+│   ├── simulation.launch.py        # Main simulation launch
+│   └── obstacle_avoidance.launch.py
 ├── my_robot_description/
 │   ├── __init__.py
-│   ├── teleop_node.py           # WASD keyboard teleoperation
-│   ├── cam.py                   # Camera recorder (video + snapshots + rosbag)
-│   └── yolo.py                  # YOLOv8 object detection node
+│   ├── teleop_node.py              # WASD keyboard teleoperation
+│   ├── cam.py                      # Camera recorder (MP4 + snapshots + rosbag)
+│   └── yolo.py                     # YOLOv8 object detection node
 ├── urdf/
-│   └── robot.urdf               # Robot model (base, wheels, caster, lidar, camera)
+│   └── robot.urdf                  # Robot model (base, wheels, caster, LiDAR, camera)
 ├── resource/
 │   └── my_robot_description
-├── test/
 ├── package.xml
-├── setup.cfg
 └── setup.py
 ```
 
 ---
 
-## ⚙️ Features
-
-- **Differential Drive** — Two driven wheels + front caster ball, controlled via `/cmd_vel`
-- **Gazebo Ignition Fortress** — Full physics simulation with `libignition-gazebo-diff-drive-system`
-- **Lidar** — 360° GPU lidar (`gpu_lidar`) visualized in RViz, published on `/scan`
-- **Camera** — 640×480 @ 30fps forward-facing camera, bridged via `ros_gz_image`
-- **WASD Teleop** — Terminal keyboard control with hold-to-move, release-to-stop
-- **Camera Recorder** — Saves MP4 video, JPEG snapshots every 10s, and a full ROS2 bag
-- **YOLOv8 Detection** — Real-time object detection on `/camera/image_raw`, publishes annotated frames to `/detection/image_raw` and JSON metadata to `/detection/objects`
-
----
-
-## 🖼️ Screenshots
-
-<!-- Add RViz, YOLO, or Gazebo screenshots here -->
-
-| RViz Lidar View | YOLO Detection Output |
-|:---------------:|:---------------------:|
-| ![RViz Lidar]() | ![YOLO Detection]() |
-
----
-
 ## 🛠️ Requirements
 
-- **ROS2 Humble** (Ubuntu 22.04)
-- **Ignition Gazebo Fortress**
-- **WSL2** (tested) — uses `ogre` render engine for WSL2 GPU compatibility
+**System:**
+- Ubuntu 22.04 (bare metal or WSL2)
+- ROS 2 Humble
+- Ignition Gazebo Fortress
 
-### Python Dependencies
+**Python:**
 
 ```bash
-pip install "numpy<2"
+pip install "numpy<2"           # cv_bridge ABI requires NumPy 1.x
 pip install "opencv-python<4.9"
 pip install ultralytics
 ```
 
-> ⚠️ `numpy<2` is required — ROS Humble's `cv_bridge` was compiled against NumPy 1.x and breaks with NumPy 2.x.
+> ⚠️ `numpy<2` is **required** — ROS 2 Humble's `cv_bridge` was compiled against NumPy 1.x and breaks silently with NumPy 2.x.
 
-### ROS2 Packages
+**ROS 2 Packages:**
 
 ```bash
 sudo apt install ros-humble-ros-gz-sim \
@@ -96,23 +131,22 @@ sudo apt install ros-humble-ros-gz-sim \
 
 ## 🚀 Build & Run
 
-### 1. Clone & Build
+### 1 · Clone & Build
 
 ```bash
 git clone https://github.com/KanishkPatel0206/RoverX.git
-cd RoverX
-# Place inside your ROS2 workspace src/ folder, then:
+# Move into your ROS 2 workspace src/ folder, then:
 colcon build --packages-select my_robot_description
 source install/setup.bash
 ```
 
-### 2. Launch Simulation
+### 2 · Launch Simulation
 
 ```bash
 ros2 launch my_robot_description simulation.launch.py
 ```
 
-### 3. Teleop (keyboard control)
+### 3 · Teleop (keyboard)
 
 ```bash
 ros2 run my_robot_description teleop_wasd
@@ -127,18 +161,24 @@ ros2 run my_robot_description teleop_wasd
 | `SPACE` | Hard Stop |
 | `CTRL-C` | Quit |
 
-### 4. Camera Recorder
+### 4 · Camera Recorder
 
 ```bash
 ros2 run my_robot_description cam
 ```
 
-Saves to `output/`:
-- `video/video_<timestamp>.mp4`
-- `snapshots/snapshot_<timestamp>.jpg` (every 10s)
-- `rosbag_<timestamp>/` (camera + lidar + odom + tf)
+Output saved to `output/`:
 
-### 5. YOLO Object Detection
+```
+output/
+├── video/
+│   └── video_<timestamp>.mp4
+├── snapshots/
+│   └── snapshot_<timestamp>.jpg    # every 10 seconds
+└── rosbag_<timestamp>/             # camera + LiDAR + odom + tf
+```
+
+### 5 · YOLO Object Detection
 
 ```bash
 ros2 run my_robot_description yolo
@@ -159,10 +199,10 @@ ros2 run my_robot_description yolo --ros-args -p model:=yolov8s.pt -p conf_thres
 ## 🗺️ Topic Map
 
 ```
-Gazebo ──► /scan             ──► RViz (Lidar)
-       ──► /camera/image_raw ──► cam node   ──► output/video.mp4
-                             ──► yolo node  ──► /detection/image_raw
-                                            ──► /detection/objects
+Gazebo ──► /scan               ──► RViz (LiDAR)
+       ──► /camera/image_raw   ──► cam node   ──► output/video.mp4
+                               ──► yolo node  ──► /detection/image_raw
+                                              ──► /detection/objects
        ──► /odom
        ──► /tf
 
@@ -171,21 +211,44 @@ teleop ──► /cmd_vel ──► Gazebo (DiffDrive plugin)
 
 ---
 
-## 🐛 Known Issues / Notes
+## 🖼️ Screenshots
 
-- **WSL2**: `ogre2` is not supported; render engine is set to `ogre` in the URDF
-- **NumPy 2.x**: Must use `numpy<2` — `cv_bridge` ABI incompatibility
-- **opencv-python**: Must use `<4.9` to match NumPy 1.x requirement
-- **gpu_lidar**: CPU `lidar` type is not implemented in Fortress; `gpu_lidar` + `ogre` is the only working combo on WSL2
+<div align="center">
+
+| RViz LiDAR View | YOLO Detection Output |
+|:---------------:|:---------------------:|
+| <img src="assets/rviz_lidar.png" alt="RViz LiDAR" width="350"/> | <img src="assets/yolo_detection.png" alt="YOLO Detection" width="350"/> |
+
+<!-- Add screenshots to the assets/ folder and update paths above -->
+
+</div>
+
+---
+
+## 🐛 Known Issues
+
+| Issue | Fix |
+|-------|-----|
+| WSL2: `ogre2` render crash | Render engine set to `ogre` in URDF |
+| `cv_bridge` crash with NumPy 2.x | Use `numpy<2` |
+| OpenCV import error | Use `opencv-python<4.9` |
+| `gpu_lidar` not found | CPU `lidar` type unsupported in Fortress; use `gpu_lidar` + `ogre` |
 
 ---
 
 ## 📄 License
 
-TODO
+MIT — see [LICENSE](LICENSE)
 
 ---
 
-## 🙋 Author
+<div align="center">
 
-**Kanishk Patel** — [@KanishkPatel0206](https://github.com/KanishkPatel0206)
+**Made with ❤️ by [Kanishk Patel](https://github.com/KanishkPatel0206)**
+
+[![GitHub](https://img.shields.io/badge/GitHub-KanishkPatel0206-black?style=flat-square&logo=github)](https://github.com/KanishkPatel0206)
+[![Portfolio](https://img.shields.io/badge/Portfolio-kanishkpatel0206.github.io-blue?style=flat-square)](https://kanishkpatel0206.github.io/Kanishk)
+
+![Visitor Count](https://visitor-badge.laobi.icu/badge?page_id=KanishkPatel0206.RoverX)
+
+</div>
