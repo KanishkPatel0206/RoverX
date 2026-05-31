@@ -16,7 +16,7 @@ A ROS2 Humble differential drive rover with Gazebo Ignition Fortress simulation,
 ---
 
 ## 🎥 Videos
--Lidar Obstacle avoidance: -
+- Lidar Obstacle avoidance: -
 
 
 https://github.com/user-attachments/assets/c169fb0d-73ba-4d97-b7b1-e08337c35103
