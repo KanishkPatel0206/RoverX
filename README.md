@@ -19,9 +19,8 @@ A ROS2 Humble differential drive rover with Gazebo Ignition Fortress simulation,
 
 <!-- Add demo video links here -->
 
-| Teleop Demo | YOLO Detection | Lidar Visualization |
-|:-----------:|:--------------:|:-------------------:|
-| [▶ Watch]() | [▶ Watch]() | https://github.com/user-attachments/assets/7a846dab-48e1-4cc0-b38b-421f024d33cd |
+| Lidar Visualization |
+| https://github.com/user-attachments/assets/7a846dab-48e1-4cc0-b38b-421f024d33cd |
 
 ---
 
