@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/7a846dab-48e1-4cc0-b38b-421f024d33cd
+
 # 🤖 RoverX
 
 A ROS2 Humble differential drive rover with Gazebo Ignition Fortress simulation, lidar, YOLOv8 object detection, and onboard camera recording.
